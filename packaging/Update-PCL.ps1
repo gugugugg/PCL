@@ -1,4 +1,4 @@
-param([string]$TargetLauncher)
+﻿param([string]$TargetLauncher)
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
 if ([string]::IsNullOrWhiteSpace($TargetLauncher)) {
