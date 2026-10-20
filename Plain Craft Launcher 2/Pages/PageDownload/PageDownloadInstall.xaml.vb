@@ -14,11 +14,13 @@ Public Class PageDownloadInstall
 
     Public Overridable Sub LoaderInit() Handles Me.Initialized
         ControlInit()
-        If RestrictMcDownload Then
-            PageLoaderInit(LoadMinecraft, PanLoad, PanAllBack, Nothing, New LoaderTask(Of String, DlClientListResult)("关闭下载", Sub() Throw New Exception("为遵守相关法律法规，PCL 暂时不再提供 MC 下载功能，非常抱歉 qwq……")), AddressOf LoadMinecraft_OnFinish)
-        Else
-            PageLoaderInit(LoadMinecraft, PanLoad, PanAllBack, Nothing, DlClientListLoader, AddressOf LoadMinecraft_OnFinish)
-        End If
+        Dim AccessLoader As New LoaderTask(Of String, DlClientListResult)("Minecraft 下载",
+            Sub(Task)
+                If RestrictMcDownload Then Throw New Exception("为遵守相关法律法规，PCL 暂时不再提供 MC 下载功能，非常抱歉 qwq……")
+                DlClientListLoader.WaitForExit(Task.Input, Task, IsForceRestart:=Task.IsForceRestarting)
+                Task.Output = DlClientListLoader.Output
+            End Sub)
+        PageLoaderInit(LoadMinecraft, PanLoad, PanAllBack, Nothing, AccessLoader, AddressOf LoadMinecraft_OnFinish)
     End Sub
 
     Private IsLoad As Boolean = False

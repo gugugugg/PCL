@@ -3,9 +3,9 @@
 Friend Module ModSecret
 
     '标注 PCL 的不同分支，仅用于替换标记
-    Public Const VersionBranchMain As String = "OpenSource"
-    '在开源版的注册表与常规版的注册表隔离，以防数据冲突
-    Public Const RegFolder As String = "PCLDebug"
+    Public Const VersionBranchMain As String = "gugugugg"
+    '独立账号缓存，避免开源版加密实现覆盖原版数据。
+    Public Const RegFolder As String = "PCLFork"
     '用于微软登录的 ClientId
     Public OAuthClientId As String = If(Environment.GetEnvironmentVariable("PCL_MS_CLIENT_ID"), "")
     'CurseForge API Key
@@ -15,7 +15,15 @@ Friend Module ModSecret
 
 #Region "网络鉴权"
 
-    Public Const RestrictMcDownload As Boolean = True
+    Private ReadOnly DownloadAccess As New McDownloadAccess("Software\PCLFork\DownloadAccess")
+    Public ReadOnly Property RestrictMcDownload As Boolean
+        Get
+            Return DownloadAccess.IsRestricted
+        End Get
+    End Property
+    Friend Function TryUnlockMcDownload(Command As String) As Boolean
+        Return DownloadAccess.TryUnlock(Command)
+    End Function
     Friend Function SecretCdnSign(UrlWithMark As String) As String
         If Not UrlWithMark.EndsWithF("{CDN}") Then Return UrlWithMark
         Return UrlWithMark.Replace("{CDN}", "").Replace(" ", "%20")

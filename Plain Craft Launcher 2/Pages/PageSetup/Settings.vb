@@ -331,7 +331,13 @@ Public Class Settings
                 Case Sources.Normal
                     GotValue = ReadIni("Setup", Key, DefaultValue)
                 Case Sources.Registry
-                    GotValue = RegistryUtils.TryRead($"HKEY_CURRENT_USER\Software\{RegFolder}", Key, DefaultValue)
+                    Dim RegistryPath = $"HKEY_CURRENT_USER\Software\{RegFolder}"
+                    '继承原版非加密偏好；账号和授权缓存保留在各自命名空间中。
+                    If Not Entry.Encrypted AndAlso Key <> "Identify" AndAlso Not RegistryUtils.Has(RegistryPath, Key) Then
+                        GotValue = RegistryUtils.TryRead("HKEY_CURRENT_USER\Software\PCL", Key, DefaultValue)
+                    Else
+                        GotValue = RegistryUtils.TryRead(RegistryPath, Key, DefaultValue)
+                    End If
                 Case Sources.Instance
                     If Instance Is Nothing Then
                         Throw New Exception($"读取版本设置 {Key} 时未提供目标版本")

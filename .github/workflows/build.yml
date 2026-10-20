@@ -4,10 +4,14 @@ on:
     paths:
       - 'Plain Craft Launcher 2/**'
       - '.github/workflows/**'
+      - 'tests/**'
+      - 'release/**'
   pull_request:
     paths:
       - 'Plain Craft Launcher 2/**'
       - '.github/workflows/**'
+      - 'tests/**'
+      - 'release/**'
   workflow_dispatch:
 
 jobs:
@@ -61,6 +65,9 @@ jobs:
 
     - name: Build
       run: msbuild "Plain Craft Launcher 2\Plain Craft Launcher 2.vbproj" -p:Configuration=${{ matrix.configuration }}
+
+    - name: Test permanent download unlock
+      run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests/Test-DownloadUnlock.ps1 -Executable "Plain Craft Launcher 2/obj/${{ matrix.configuration }}/Plain Craft Launcher 2.exe"
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v7

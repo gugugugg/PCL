@@ -11,6 +11,9 @@ Public Class FormMain
         Dim FeatureList As New List(Of KeyValuePair(Of Integer, String))
         '统计更新日志条目
         If BuildType = BuildTypes.Release Then
+            If LastVersion < 415 Then 'Release 3.00.0.0
+                FeatureList.Add(New KeyValuePair(Of Integer, String)(5, "新增：PCL 单独维护版控制台，按 F3 打开"))
+            End If
             If LastVersion < 413 Then 'Release 2.99.0.0
                 FeatureList.Add(New KeyValuePair(Of Integer, String)(5, "删除：为遵守相关法律法规，PCL 暂时不再提供 MC 下载功能，非常抱歉 qwq……"))
             End If
@@ -103,6 +106,9 @@ Public Class FormMain
             '3：BUG+ IMP* FEAT-
             '2：BUG* IMP-
             '1：BUG-
+            If LastVersion < 416 Then 'Snapshot 3.00.0.0
+                FeatureList.Add(New KeyValuePair(Of Integer, String)(5, "新增：PCL 单独维护版控制台，按 F3 打开"))
+            End If
             If LastVersion < 414 Then 'Snapshot 2.99.0.0
                 FeatureList.Add(New KeyValuePair(Of Integer, String)(5, "删除：为遵守相关法律法规，PCL 暂时不再提供 MC 下载功能，非常抱歉 qwq……"))
             End If
@@ -823,6 +829,12 @@ Public Class FormMain
         ' 在没有弹窗时：继续检查……
         '==========================
 
+        If e.Key = Key.F3 Then
+            e.Handled = True
+            OpenConsole()
+            Return
+        End If
+
         '按 ESC 取消启动，或返回上一级
         If e.Key = Key.Escape Then
             If PageCurrent = FormMain.PageType.Launch AndAlso McLaunchLoader.State = LoadState.Loading Then
@@ -863,6 +875,27 @@ Public Class FormMain
             End If
         End If
     End Sub
+    Private Sub OpenConsole()
+        Dim Command = MyMsgBoxInput("控制台", "输入命令，按 Enter 执行；按 Esc 关闭。", HintText:="命令", Button1:="执行", Button2:="关闭")
+        If Command Is Nothing Then Return
+        Try
+            Dim WasRestricted = RestrictMcDownload
+            If Not TryUnlockMcDownload(Command) Then
+                Hint("未知命令。", HintType.Red)
+                Return
+            End If
+            If WasRestricted Then
+                FrmDownloadInstall?.PageLoaderRestart()
+                If FrmDownloadModify IsNot Nothing Then FrmDownloadModify.CardMinecraft.Visibility = Visibility.Visible
+                If TypeOf PageRight Is PageDownloadResourceDetail Then PageRight.PageLoaderRestart()
+            End If
+            Hint("MC 下载已永久解锁，重启和更新后仍然有效。", HintType.Green)
+        Catch ex As Exception
+            Logger.Error(ex, "控制台命令执行失败", LogBehavior.Toast)
+            Hint("命令执行失败，解锁状态未确认。", HintType.Red)
+        End Try
+    End Sub
+
     Private Sub FormMain_MouseDown(sender As Object, e As MouseButtonEventArgs) Handles Me.MouseDown
         '鼠标侧键返回上一级
         If FrmMain.PanMsg.Children.Count > 0 OrElse WaitingMyMsgBox.Any Then Return '弹窗中（#5513）
