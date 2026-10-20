@@ -12,7 +12,9 @@ Public Class FormMain
         '统计更新日志条目
         If BuildType = BuildTypes.Release Then
             If LastVersion < 413 Then 'Release 2.99.0.0
-                FeatureList.Add(New KeyValuePair(Of Integer, String)(5, "删除：为遵守相关法律法规，PCL 暂时不再提供 MC 下载功能，非常抱歉 qwq……"))
+                FeatureList.Add(New KeyValuePair(Of Integer, String)(5, If(RestrictMcDownload,
+                    "删除：为遵守相关法律法规，PCL 暂时不再提供 MC 下载功能，非常抱歉 qwq……",
+                    "恢复：独立维护分支保留 MC 下载、整合包安装与 MC 版本切换功能")))
             End If
             If LastVersion < 411 Then 'Release 2.14.0.0
                 FeatureList.Add(New KeyValuePair(Of Integer, String)(4, "新增：允许修改、添加、移除、更新已安装版本的各个组件，可从版本设置中进入"))
@@ -104,7 +106,9 @@ Public Class FormMain
             '2：BUG* IMP-
             '1：BUG-
             If LastVersion < 414 Then 'Snapshot 2.99.0.0
-                FeatureList.Add(New KeyValuePair(Of Integer, String)(5, "删除：为遵守相关法律法规，PCL 暂时不再提供 MC 下载功能，非常抱歉 qwq……"))
+                FeatureList.Add(New KeyValuePair(Of Integer, String)(5, If(RestrictMcDownload,
+                    "删除：为遵守相关法律法规，PCL 暂时不再提供 MC 下载功能，非常抱歉 qwq……",
+                    "恢复：独立维护分支保留 MC 下载、整合包安装与 MC 版本切换功能")))
             End If
             If LastVersion < 412 Then 'Snapshot 2.14.0.0
                 FeatureList.Add(New KeyValuePair(Of Integer, String)(4, "新增：允许修改、添加、移除、更新已安装版本的各个组件，可从版本设置中进入"))

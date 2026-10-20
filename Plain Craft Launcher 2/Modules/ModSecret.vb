@@ -3,7 +3,7 @@
 Friend Module ModSecret
 
     '标注 PCL 的不同分支，仅用于替换标记
-    Public Const VersionBranchMain As String = "OpenSource"
+    Public Const VersionBranchMain As String = "gugugugg"
     '在开源版的注册表与常规版的注册表隔离，以防数据冲突
     Public Const RegFolder As String = "PCLDebug"
     '用于微软登录的 ClientId
@@ -15,7 +15,8 @@ Friend Module ModSecret
 
 #Region "网络鉴权"
 
-    Public Const RestrictMcDownload As Boolean = True
+    '独立维护分支保留 MC 下载、整合包安装与 MC 版本切换功能。
+    Public Const RestrictMcDownload As Boolean = False
     Friend Function SecretCdnSign(UrlWithMark As String) As String
         If Not UrlWithMark.EndsWithF("{CDN}") Then Return UrlWithMark
         Return UrlWithMark.Replace("{CDN}", "").Replace(" ", "%20")
